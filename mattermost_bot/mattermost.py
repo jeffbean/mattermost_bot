@@ -137,7 +137,7 @@ class MattermostAPI(object):
 
 
 class MattermostClient(object):
-    def __init__(self, url, team, email, password, ssl_verify=True, login=1):
+    def __init__(self, url, team, email, password, ssl_verify=True, login=1, origin=None):
         self.users = {}
         self.channels = {}
         self.mentions = {}
@@ -149,6 +149,7 @@ class MattermostClient(object):
         self.team = team
         self.email = email
         self.password = password
+        self.origin = origin
 
         if login:
             self.login(team, email, password)
@@ -179,7 +180,9 @@ class MattermostClient(object):
 
     def _connect_websocket(self, url, cookie_name):
         self.websocket = websocket.create_connection(
-            url, header=[
+            url,
+            origin=self.origin,
+            header=[
                 "Cookie: %s=%s" % (cookie_name, self.api.token)
             ], sslopt={
                 "cert_reqs": ssl.CERT_REQUIRED if self.api.ssl_verify \

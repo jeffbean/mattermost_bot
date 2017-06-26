@@ -14,6 +14,7 @@ BOT_LOGIN = 'bot@example.com'
 BOT_PASSWORD = None
 BOT_TEAM = 'devops'
 SSL_VERIFY = True
+WS_ORIGIN = None
 
 IGNORE_NOTIFIES = ['@channel', '@all']
 WORKERS_NUM = 10

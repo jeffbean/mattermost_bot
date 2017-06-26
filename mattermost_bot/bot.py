@@ -24,7 +24,8 @@ class Bot(object):
         self._client = MattermostClient(
             settings.BOT_URL, settings.BOT_TEAM,
             settings.BOT_LOGIN, settings.BOT_PASSWORD,
-            settings.SSL_VERIFY
+            ssl_verify=settings.SSL_VERIFY,
+            origin=settings.WS_ORIGIN,
         )
         logger.info('connected to mattermost')
         self._plugins = PluginsManager()
