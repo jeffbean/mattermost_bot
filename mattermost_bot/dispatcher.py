@@ -204,11 +204,13 @@ class Message(object):
     def _get_first_webhook(self):
         hooks = self._client.api.hooks_list()
         if not hooks:
-            for channel in self._client.api.get_channels():
+            chans = self._client.api.get_channels()
+            logger.debug("chans scanning: %s", chans)
+            for channel in chans:
                 if channel.get('name') == 'town-square':
                     return self._client.api.hooks_create(
                         channel_id=channel.get('id')).get('id')
-        return hooks[0].get('id')
+        return iter(hooks).next().get('id')
 
     @staticmethod
     def _get_webhook_url_by_id(hook_id):
@@ -220,10 +222,12 @@ class Message(object):
 
     def send_webapi(self, text, attachments=None, channel_id=None, **kwargs):
         url = self._get_webhook_url_by_id(self._get_first_webhook())
-        kwargs['username'] = kwargs.get(
-            'username', self.get_username(self._client.user['id']))
+        logger.debug("send_webapi url: %s" % url)
+
+        kwargs['username'] = kwargs.get('username', self.get_username(self._client.user['id']))
         kwargs['icon_url'] = kwargs.get('icon_url', BOT_ICON)
         kwargs['icon_emoji'] = kwargs.get('icon_emoji', BOT_EMOJI)
+
         self._client.api.in_webhook(
             url, self.get_channel_name(channel_id), text,
             attachments=attachments, ssl_verify=self._client.api.ssl_verify,

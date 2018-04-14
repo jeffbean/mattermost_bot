@@ -6,4 +6,5 @@ logs
 dist
 build
 *.egg-info*
+env/
 .build
