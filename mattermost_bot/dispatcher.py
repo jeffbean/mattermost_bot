@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 MESSAGE_MATCHER = re.compile(r'^(@.*?\:?)\s(.*)', re.MULTILINE | re.DOTALL)
 BOT_ICON = settings.BOT_ICON if hasattr(settings, 'BOT_ICON') else None
 BOT_EMOJI = settings.BOT_EMOJI if hasattr(settings, 'BOT_EMOJI') else None
-
+WEBHOOK_ID = settings.WEBHOOK_ID if hasattr(settings, 'WEBHOOK_ID') else None
 
 class MessageDispatcher(object):
     def __init__(self, client, plugins):
@@ -203,15 +203,14 @@ class Message(object):
 
     def _get_first_webhook(self):
         hooks = self._client.api.hooks_list()
+        if not isinstance(hooks, list):
+            return None
         if not hooks:
-            chans = self._client.api.get_channels()
-            logger.debug("chans scanning: %s", chans)
-            for channel in chans:
+            for channel in self._client.api.get_channels():
                 if channel.get('name') == 'town-square':
                     return self._client.api.hooks_create(
                         channel_id=channel.get('id')).get('id')
 
-        logger.debug("hooks : %s", hooks)
         return hooks[0].get('id')
 
     @staticmethod
@@ -223,7 +222,9 @@ class Message(object):
         self.send_webapi(self._gen_reply(text), *args, **kwargs)
 
     def send_webapi(self, text, attachments=None, channel_id=None, **kwargs):
-        url = self._get_webhook_url_by_id(self._get_first_webhook())
+        wh = WEBHOOK_ID if WEBHOOK_ID else self._get_first_webhook()
+
+        url = self._get_webhook_url_by_id(wh)
         logger.debug("send_webapi url: %s" % url)
 
         kwargs['username'] = kwargs.get('username', self.get_username(self._client.user['id']))

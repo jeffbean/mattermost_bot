@@ -15,6 +15,7 @@ BOT_PASSWORD = None
 BOT_TEAM = 'devops'
 SSL_VERIFY = True
 WS_ORIGIN = None
+WEBHOOK_ID = None
 
 IGNORE_NOTIFIES = ['@channel', '@all']
 WORKERS_NUM = 10
