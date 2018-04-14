@@ -210,7 +210,9 @@ class Message(object):
                 if channel.get('name') == 'town-square':
                     return self._client.api.hooks_create(
                         channel_id=channel.get('id')).get('id')
-        return iter(hooks).next().get('id')
+
+        logger.debug("hooks : %s", hooks)
+        return hooks[0].get('id')
 
     @staticmethod
     def _get_webhook_url_by_id(hook_id):

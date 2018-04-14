@@ -22,12 +22,17 @@ class MattermostAPI(object):
         return {"Authorization": "Bearer " + self.token}
 
     def get(self, request):
-        return json.loads(
-            requests.get(
-                self.url + request,
-                headers=self._get_headers(),
-                verify=self.ssl_verify
-            ).text)
+        r = requests.get(
+            self.url + request,
+            headers=self._get_headers(),
+            verify=self.ssl_verify
+        )
+
+        if r.status_code == 200:
+            return json.loads(r.text)
+        else:
+            logger.error("failed to perform get reqest: [%s]" % self.url)
+            r.raise_for_status()
 
     def post(self, request, data=None):
         return json.loads(requests.post(
